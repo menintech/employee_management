@@ -7,7 +7,7 @@ import { IconMenu2, IconX } from "@tabler/icons-react";
 
 interface Links {
   label: string;
-  href: string;
+  redirectTo: string;
   icon: React.JSX.Element | React.ReactNode;
 }
 
@@ -167,7 +167,7 @@ export const SidebarLink = ({
   const { open, animate } = useSidebar();
   return (
     <Link
-      href={link.href}
+      href={`/dashboard/${link.redirectTo}`}
       className={cn(
         "flex items-center justify-start gap-2  group/sidebar py-2",
         className

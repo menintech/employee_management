@@ -10,7 +10,6 @@ import {
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -18,28 +17,28 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   const links = [
     {
       label: "Dashboard",
-      href: "dashboard/home",
+      redirectTo: "home",
       icon: (
         <IconBrandTabler className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
-      label: "Profile",
-      href: "#",
+      label: "Home",
+      redirectTo: "home",
       icon: (
         <IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
-      label: "Settings",
-      href: "#",
+      label: "employees",
+      redirectTo: "employees",
       icon: (
         <IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Logout",
-      href: "#",
+      redirectTo: "#",
       icon: (
         <IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
@@ -55,7 +54,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
           "h-screen"
         )}
       >
-        <Sidebar open={open} setOpen={setOpen}>
+        <Sidebar open={open} setOpen={setOpen} animate={false}>
           <SidebarBody className="justify-between gap-10">
             <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
               {open ? <Logo /> : <LogoIcon />}
@@ -69,7 +68,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
               <SidebarLink
                 link={{
                   label: "Manu Arora",
-                  href: "#",
+                  redirectTo: "#",
                   icon: (
                     <Avatar className="h-7 w-7">
                       <AvatarImage src="https://github.com/shadcn.png" />
@@ -82,7 +81,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
           </SidebarBody>
         </Sidebar>
         <div className="flex flex-1">
-          <div className="p-2 md:p-10  bg-white dark:bg-neutral-900 flex flex-col gap-2 flex-1 w-full h-full">
+          <div className="p-2 md:p-10  bg-white dark:bg-neutral-900 flex flex-col gap-2 flex-1 w-full h-full overflow-y-auto">
             {children}
           </div>
         </div>
