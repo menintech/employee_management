@@ -4,6 +4,7 @@ import * as XLSX from "xlsx";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/ui/data-table";
 import { Pagination } from "@/components/ui/pagination";
+import MonthPicker from "@/components/MonthPicker";
 
 type EmployeeRecord = {
   emp_id: number;
@@ -25,7 +26,7 @@ type MergedEmployeeTimes = Record<
   }
 >;
 
-type Payment = {
+type EmployeeDetails = {
   id: number;
   emp_id: number;
   totalRecords: number;
@@ -33,7 +34,7 @@ type Payment = {
 };
 
 export default function UploadFile() {
-  const [tableData, setTableData] = useState<Payment[]>([]);
+  const [tableData, setTableData] = useState<EmployeeDetails[]>([]);
   const [expandedRowId, setExpandedRowId] = useState<number | null>(null); // State for expanded row
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -154,7 +155,7 @@ export default function UploadFile() {
 
       // Parse and process data (assuming your merge logic here)
       const mergedData = mergeEmployeeTimesWithCount(jsonData);
-      const formattedData: Payment[] = Object.entries(mergedData).map(
+      const formattedData: EmployeeDetails[] = Object.entries(mergedData).map(
         ([emp_id, { totalRecords, dates }], index) => ({
           id: index + 1,
           emp_id: Number(emp_id),
@@ -164,6 +165,7 @@ export default function UploadFile() {
       );
 
       setTableData(formattedData);
+      console.log('formattedData', formattedData)
       // Get the headers from the sheet
       const headers = XLSX.utils.sheet_to_json(sheet, {
         header: 1,
@@ -175,7 +177,6 @@ export default function UploadFile() {
       );
       if (!isValid) {
         setError("The uploaded Excel file does not match the required format.");
-        setData([]); // Clear any previously displayed data
         return;
       }
 
@@ -184,32 +185,20 @@ export default function UploadFile() {
     reader.onerror = () => alert("An error occurred while reading the file.");
   };
 
-  const columns: ColumnDef<Payment>[] = [
-    { accessorKey: "id", header: "ID" },
-    { accessorKey: "emp_id", header: "Employee ID" },
-    { accessorKey: "totalRecords", header: "Records" },
-    {
-      id: "details",
-      header: "Details",
-      cell: ({ row }) => (
-        <button
-          className="text-blue-500 underline"
-          onClick={() => toggleRowExpansion(row.original.id)}
-        >
-          {expandedRowId === row.original.id ? "Hide Details" : "View Details"}
-        </button>
-      ),
-    },
-  ];
 
   const paginatedData = tableData.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
 
+  const handleMonthSelect = (year: number, month: number) => {
+    console.log(`Selected Year: ${year}, Selected Month: ${month}`);
+    // Use the year and month for filtering or fetching data
+  };
+
   return (
     <div className="p-4">
-      <h1 className="text-lg font-bold mb-4">Excel to Table</h1>
+      <MonthPicker onMonthSelect={handleMonthSelect} />
       <input
         type="file"
         accept=".xlsx, .xls"
