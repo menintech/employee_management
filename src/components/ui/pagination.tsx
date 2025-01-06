@@ -1,3 +1,5 @@
+import { Button } from "./button";
+
 type PaginationProps = {
   totalRows: number;
   rowsPerPage: number;
@@ -15,35 +17,35 @@ export function Pagination({
 
   return (
     <div className="flex justify-center mt-4 space-x-2">
-      <button
+      <Button
         onClick={() => onPageChange(1)}
         disabled={currentPage === 1}
-        className="px-3 py-1 bg-gray-200 disabled:opacity-50"
+        className="px-3 py-1 disabled:opacity-50"
       >
         First
-      </button>
-      <button
+      </Button>
+      <Button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="px-3 py-1 bg-gray-200 disabled:opacity-50"
+        className="px-3 py-1 disabled:opacity-50"
       >
         Previous
-      </button>
+      </Button>
       <span className="px-3 py-1">{`Page ${currentPage} of ${totalPages}`}</span>
-      <button
+      <Button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="px-3 py-1 bg-gray-200 disabled:opacity-50"
+        className="px-3 py-1 disabled:opacity-50"
       >
         Next
-      </button>
-      <button
+      </Button>
+      <Button
         onClick={() => onPageChange(totalPages)}
         disabled={currentPage === totalPages}
-        className="px-3 py-1 bg-gray-200 disabled:opacity-50"
+        className="px-3 py-1 disabled:opacity-50"
       >
         Last
-      </button>
+      </Button>
     </div>
   );
 }
