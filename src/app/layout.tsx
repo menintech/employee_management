@@ -2,6 +2,14 @@ import type { Metadata } from "next";
 import { Quicksand } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
+import { ConvexClientProvider } from "./ConvexClientProvider";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
 
 const quicksand = Quicksand({ subsets: ["latin"], weight: "500" });
 
@@ -18,14 +26,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${quicksand.className} antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        <ClerkProvider signInForceRedirectUrl="/dashboard">
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <ConvexClientProvider>{children}</ConvexClientProvider>
+          </ThemeProvider>
+        </ClerkProvider>
       </body>
     </html>
   );

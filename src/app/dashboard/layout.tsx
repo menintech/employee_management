@@ -3,44 +3,46 @@
 import React, { useState } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import {
-  IconArrowLeft,
-  IconBrandTabler,
-  IconSettings,
-  IconUserBolt,
+  IconDashboard,
+  IconHomeMove,
+  IconUserPlus,
+  IconUsersGroup,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserButton, useUser } from "@clerk/nextjs";
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { user } = useUser();
   const links = [
     {
       label: "Dashboard",
-      redirectTo: "home",
+      redirectTo: "/",
       icon: (
-        <IconBrandTabler className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconDashboard className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Home",
       redirectTo: "home",
       icon: (
-        <IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconHomeMove className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
-      label: "employees",
-      redirectTo: "employees",
+      label: "Add Employees",
+      redirectTo: "addEmployee",
       icon: (
-        <IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconUserPlus className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
-      label: "Logout",
-      redirectTo: "#",
+      label: "List Employees",
+      redirectTo: "listEmployee",
       icon: (
-        <IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconUsersGroup className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
   ];
@@ -54,7 +56,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
           "h-screen"
         )}
       >
-        <Sidebar open={open} setOpen={setOpen} animate={false}>
+        <Sidebar open={open} setOpen={setOpen} animate={true}>
           <SidebarBody className="justify-between gap-10">
             <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
               {open ? <Logo /> : <LogoIcon />}
@@ -67,11 +69,11 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
             <div>
               <SidebarLink
                 link={{
-                  label: "Manu Arora",
+                  label: `${user?.primaryEmailAddress?.emailAddress}`,
                   redirectTo: "#",
                   icon: (
                     <Avatar className="h-7 w-7">
-                      <AvatarImage src="https://github.com/shadcn.png" />
+                      <UserButton />
                       <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
                   ),

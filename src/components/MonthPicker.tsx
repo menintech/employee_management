@@ -14,6 +14,7 @@ const MonthPicker = ({
   onMonthSelect: (year: number, month: number) => void;
 }) => {
   const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth(); // 0-based index for months (Jan = 0)
 
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
@@ -52,7 +53,6 @@ const MonthPicker = ({
           {/* Previous Year Button */}
           <Button
             variant="outline"
-            disabled={selectedYear <= currentYear - 1} // Disable if at the minimum year
             onClick={() => setSelectedYear((prev) => prev - 1)}
           >
             {"<"}
@@ -63,7 +63,7 @@ const MonthPicker = ({
           {/* Next Year Button */}
           <Button
             variant="outline"
-            disabled={selectedYear >= currentYear + 1} // Disable if at the maximum year
+            disabled={selectedYear >= currentYear} // Disable future years
             onClick={() => setSelectedYear((prev) => prev + 1)}
           >
             {">"}
@@ -72,8 +72,7 @@ const MonthPicker = ({
         <div className="grid grid-cols-3 gap-2">
           {months.map((month, index) => {
             const isDisabled =
-              selectedYear < currentYear || // Disable all months for past years
-              selectedYear > currentYear; // Disable all months for future years
+              selectedYear === currentYear && index > currentMonth; // Disable future months only for the current year
 
             return (
               <Button
@@ -82,9 +81,6 @@ const MonthPicker = ({
                   selectedMonth === index && !isDisabled ? "default" : "outline"
                 }
                 disabled={isDisabled}
-                className={`${
-                  isDisabled ? "cursor-not-allowed" : "cursor-pointer"
-                }`}
                 onClick={() => handleMonthSelect(index)}
               >
                 {month}
