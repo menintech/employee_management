@@ -44,13 +44,6 @@ const EmployeeList = () => {
   // Function to toggle the visibility of attendance details for an employee
   const handleShowDetails = (emp_id: number) => {
     router.push(`/dashboard/listEmployee/${emp_id}`);
-    const selectedEmp = employees.filter((emp) => emp.emp_id === emp_id);
-    console.log("employee", selectedEmp);
-    if (!ISSERVER)
-      localStorage.setItem(
-        "empDetails",
-        JSON.stringify(selectedEmp[0].attendanceData)
-      );
   };
 
   const paginatedData = employees.slice(

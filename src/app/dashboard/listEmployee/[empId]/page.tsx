@@ -1,16 +1,19 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Barchart } from "@/app/charts/Barchart";
+import { collection, getDocs, query, where } from "@firebase/firestore";
+import db from "@/lib/firestore";
+import { Button } from "@/components/ui/button";
+import { MoveLeft } from "lucide-react";
+import { Select } from "@radix-ui/react-select";
 import {
-  Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { MoveLeft } from "lucide-react";
+import { Barchart } from "@/app/charts/Barchart";
 import {
   Card,
   CardContent,
@@ -19,57 +22,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "postcss";
 import { HalfdayChart } from "@/app/charts/halfdayChart";
-import { Input } from "@/components/ui/input";
 
-const EmployeeDetails = () => {
-  const { empId } = useParams();
-  const router = useRouter();
-  const [empRecord, setEmpRecord] = useState<any[]>();
-  const empdDetails = localStorage.getItem("empDetails");
-  const [employeePerYear, setEmployeePerYear] = useState<any[]>();
-  const [paymentSection, showPaymentSection] = useState<boolean>(false);
-  const [selectedMonth, setSelectedMonth] = useState();
-  const [salaryCalculation, setSalaryCalculation] = useState<any>();
-
-  useEffect(() => {
-    if (empdDetails) {
-      const mergedData = mergeAttendanceData(JSON.parse(empdDetails));
-      console.log(mergedData);
-      setEmpRecord(mergedData);
-    }
-  }, [empdDetails]);
-
-  const mergeAttendanceData = (attendanceData: any[]) => {
-    const result: any = [];
-
-    // Helper function to initialize a year's records
-    const initializeYear = (year: any) => ({
-      year,
-      records: Array.from({ length: 12 }, (_, i) => ({
-        month: i + 1,
-        record: [],
-      })),
-    });
-
-    attendanceData.forEach(({ year, month, records }) => {
-      // Find the year in the result, or create a new one if it doesn't exist
-      let yearData = result.find((y: any) => y.year === year);
-      if (!yearData) {
-        yearData = initializeYear(year);
-        result.push(yearData);
-      }
-
-      // Find the month within the year's records
-      const monthData = yearData.records.find((m: any) => m.month === month);
-      if (monthData) {
-        monthData.record = records; // Assign the records for the month
-      }
-    });
-
-    return result;
-  };
-
+const page = () => {
   const monthData: Record<number, string>[] = [
     { 1: "Jan" },
     { 2: "Feb" },
@@ -89,14 +45,75 @@ const EmployeeDetails = () => {
   const FULL_DAY_SALARY = 1000;
   const HALF_DAY_SALARY = 500;
 
-  const getMonthName = (monthNumber: number) => {
-    const month = monthData.find((entry) => entry[monthNumber]);
-    return month ? month[monthNumber] : "Invalid month";
+  const { empId } = useParams<any>();
+  const router = useRouter();
+
+  const [employee, setEmployee] = useState<any>();
+  const [employeePerYear, setEmployeePerYear] = useState<any[]>();
+  const [paymentSection, showPaymentSection] = useState<boolean>(false);
+  const [selectedMonth, setSelectedMonth] = useState();
+  const [salaryCalculation, setSalaryCalculation] = useState<any>();
+
+  useEffect(() => {
+    handleUpdateEmployees(empId);
+  }, []);
+
+  const handleUpdateEmployees = async (empId: any) => {
+    try {
+      const q = query(collection(db, "employees"));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        querySnapshot.docs.forEach((doc) => {
+          if (doc.data().emp_id == empId) {
+            const result = mergeAttendanceData(doc.data().attendanceData);
+            setEmployee(result);
+            console.log("result", result);
+          }
+        });
+      } else {
+        console.log("No documents found in the employees collection.");
+      }
+      // Success message
+    } catch (error) {
+      console.error(error);
+    } finally {
+    }
+  };
+
+  const mergeAttendanceData = (attendanceData: any) => {
+    const result: any = [];
+
+    // Helper function to initialize a year's records
+    const initializeYear = (year: any) => ({
+      year,
+      records: Array.from({ length: 12 }, (_, i) => ({
+        month: i + 1,
+        record: [],
+      })),
+    });
+
+    attendanceData.forEach(({ year, month, records }: any) => {
+      // Find the year in the result, or create a new one if it doesn't exist
+      let yearData = result.find((y: any) => y.year === year);
+      if (!yearData) {
+        yearData = initializeYear(year);
+        result.push(yearData);
+      }
+
+      // Find the month within the year's records
+      const monthData = yearData.records.find((m: any) => m.month === month);
+      if (monthData) {
+        monthData.record = records; // Assign the records for the month
+      }
+    });
+
+    return result;
   };
 
   const handleYearChange = (e: any) => {
     console.log("value changes", e);
-    const selectedRecord = empRecord?.filter((emp) => emp.year === e);
+    const selectedRecord = employee?.filter((emp: any) => emp.year === e);
     console.log("selectedRecord", selectedRecord);
     setEmployeePerYear(selectedRecord);
   };
@@ -132,34 +149,44 @@ const EmployeeDetails = () => {
     };
   };
 
+  const getMonthName = (monthNumber: number) => {
+    const month = monthData.find((entry) => entry[monthNumber]);
+    return month ? month[monthNumber] : "Invalid month";
+  };
+
   return (
     <>
       <div>
         <div className="flex justify-between mb-2">
           <div>
-            <Button onClick={() => router.push("/dashboard/listEmployee")}>
+            <Button
+              onClick={() => {
+                paymentSection
+                  ? showPaymentSection(false)
+                  : router.push("/dashboard/listEmployee");
+              }}
+            >
               <MoveLeft />
               Back
             </Button>
           </div>
 
           <div>
-            <Select onValueChange={handleYearChange}>
+            <Select onValueChange={(e) => handleYearChange(e)}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Select year" />
               </SelectTrigger>
               <SelectContent>
-                {empRecord &&
-                  empRecord.map((data) => (
-                    <SelectItem value={data.year}>{data.year}</SelectItem>
+                {employee &&
+                  employee?.map((data: any) => (
+                    <SelectItem key={data.year} value={data.year}>
+                      {data.year}
+                    </SelectItem>
                   ))}
               </SelectContent>
             </Select>
           </div>
         </div>
-      </div>
-      <div className="">
-        {employeePerYear && <Barchart attendanceData={employeePerYear} />}
       </div>
       {paymentSection ? (
         <>
@@ -191,7 +218,7 @@ const EmployeeDetails = () => {
                     <div className="grid w-full items-center gap-4">
                       <div className="flex flex-col space-y-1.5">
                         <label htmlFor="name">Name</label>
-                        <Input id="name" placeholder="Name of your project" />
+                        {/* <Input type="text" placeholder="Name of your project" /> */}
                       </div>
                       <div className="flex flex-col space-y-1.5">
                         <label htmlFor="framework">Framework</label>
@@ -226,7 +253,7 @@ const EmployeeDetails = () => {
       ) : (
         <div className="grid grid-cols-6 grid-rows-1 gap-4 mt-2">
           {employeePerYear &&
-            employeePerYear[0].records.map((data) => (
+            employeePerYear[0].records.map((data: any) => (
               <div>
                 <Card className="w-full">
                   <CardHeader>
@@ -251,8 +278,11 @@ const EmployeeDetails = () => {
             ))}
         </div>
       )}
+      <div className="">
+        {employeePerYear && <Barchart attendanceData={employeePerYear} />}
+      </div>
     </>
   );
 };
 
-export default EmployeeDetails;
+export default page;

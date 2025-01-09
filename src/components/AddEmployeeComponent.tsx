@@ -3,8 +3,6 @@ import React, { useState } from "react";
 import * as XLSX from "xlsx";
 import { Pagination } from "@/components/ui/pagination";
 import MonthPicker from "@/components/MonthPicker";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
 import { LoaderCircle } from "lucide-react";
@@ -92,7 +90,6 @@ export default function AddEmployeeComponent() {
   const [expandedRowId, setExpandedRowId] = useState<number | null>(null); // State for expanded row
   const [currentPage, setCurrentPage] = useState(1);
   const [monthYear, setMonthYear] = useState<MonthYear>();
-  const createEmployee = useMutation(api.employee.createEmployee);
   const [loading, setLoading] = useState(false);
   const { user } = useUser();
   const router = useRouter();

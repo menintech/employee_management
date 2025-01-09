@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Quicksand } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
-import { ConvexClientProvider } from "./ConvexClientProvider";
 import {
   ClerkProvider,
   SignInButton,
@@ -33,7 +32,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <ConvexClientProvider>{children}</ConvexClientProvider>
+            {children}
           </ThemeProvider>
         </ClerkProvider>
       </body>
