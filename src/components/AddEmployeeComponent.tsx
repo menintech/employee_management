@@ -1,8 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import * as XLSX from "xlsx";
-import { ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "@/components/ui/data-table";
 import { Pagination } from "@/components/ui/pagination";
 import MonthPicker from "@/components/MonthPicker";
 import { useMutation } from "convex/react";
@@ -11,6 +9,16 @@ import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
 import { LoaderCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import {
+  addDoc,
+  arrayUnion,
+  collection,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "@firebase/firestore";
+import db from "@/lib/firestore";
 
 type EmployeeRecord = {
   emp_id: number;
@@ -285,7 +293,7 @@ export default function AddEmployeeComponent() {
 
     try {
       // Prepare all employee update promises
-      const updatePromises = tableData.map(async (emp) => {
+      tableData.map(async (emp) => {
         const attendanceData = [
           {
             year: emp.year, // Use year as a number
@@ -302,25 +310,45 @@ export default function AddEmployeeComponent() {
           },
         ];
 
-        // Return the promise for creating/updating employee
-        return createEmployee({
-          emp_id: emp.emp_id,
-          firstName: emp.firstName || "", // Ensure these fields have fallback values
-          middleName: emp.middleName || "",
-          lastName: emp.lastName || "",
-          email: emp.email || "",
-          address: emp.address || "",
-          adharCard: emp.adharCard || "",
-          attendanceData, // Pass structured attendance data
-          isActive: emp.isActive,
-          employer: user?.primaryEmailAddress?.emailAddress || "", // Employer identifier
-        });
+        const empQuery = query(
+          collection(db, "employees"),
+          where("emp_id", "==", emp.emp_id)
+        );
+        const querySnapshot = await getDocs(empQuery);
+
+        if (!querySnapshot.empty) {
+          // Get the document ID for the matching employee
+          const docId = querySnapshot.docs[0].id;
+
+          // Append the new attendanceData to the existing attendanceData array
+          await updateDoc(querySnapshot.docs[0].ref, {
+            attendanceData: arrayUnion(...attendanceData), // Append attendanceData using arrayUnion
+          });
+
+          console.log(`Updated employee with emp_id: ${emp.emp_id}`);
+        } else {
+          const emp_data = {
+            emp_id: emp.emp_id,
+            firstName: emp.firstName || "", // Ensure these fields have fallback values
+            middleName: emp.middleName || "",
+            lastName: emp.lastName || "",
+            email: emp.email || "",
+            address: emp.address || "",
+            adharCard: emp.adharCard || "",
+            attendanceData, // Pass structured attendance data
+            isActive: emp.isActive,
+            employer: user?.primaryEmailAddress?.emailAddress || "", // Employer identifier
+          };
+
+          console.log("attendance data", emp_data);
+
+          const docRef = await addDoc(collection(db, "employees"), {
+            ...emp_data,
+          });
+          console.log("Document written with id", docRef.id);
+        }
       });
 
-      // Execute all updates concurrently
-      await Promise.all(updatePromises);
-
-      router.push("/dashboard/listEmployee");
       // Success message
       setTableData([]); // Clear table data after saving
     } catch (error) {
@@ -328,6 +356,7 @@ export default function AddEmployeeComponent() {
       console.error(error);
     } finally {
       setLoading(false);
+      router.push("/dashboard/listEmployee");
     }
   };
 

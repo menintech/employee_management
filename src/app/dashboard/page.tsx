@@ -9,6 +9,7 @@ import { redirect } from "next/navigation";
 import { Barchart } from "../charts/Barchart";
 import { EmployeePresentChart } from "../charts/EmployeePresentChart";
 import { CountAnalysis } from "../charts/CountAnalysis";
+import AddItem from "@/components/AddItem";
 
 const page = () => {
   const { user } = useUser();
@@ -39,6 +40,7 @@ const page = () => {
         {/* <div>
           <Barchart />
         </div> */}
+        <AddItem />
         <div>
           <EmployeePresentChart />
         </div>
