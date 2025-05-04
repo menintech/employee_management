@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import {
+  IconCreditCard,
   IconDashboard,
   IconHomeMove,
   IconUserPlus,
@@ -13,6 +14,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserButton, useUser } from "@clerk/nextjs";
+import Image from "next/image";
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user } = useUser();
@@ -21,28 +23,31 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
       label: "Dashboard",
       redirectTo: "/",
       icon: (
-        <IconDashboard className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconDashboard className="text-neutral-900 h-5 w-5 flex-shrink-0" />
       ),
     },
-    {
-      label: "Home",
-      redirectTo: "home",
-      icon: (
-        <IconHomeMove className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
+    // {
+    //   label: "Home",
+    //   redirectTo: "home",
+    //   icon: <IconHomeMove className="text-neutral-900 h-5 w-5 flex-shrink-0" />,
+    // },
     {
       label: "Add Employees",
       redirectTo: "addEmployee",
+      icon: <IconUserPlus className="text-neutral-900 h-5 w-5 flex-shrink-0" />,
+    },
+    {
+      label: "Employees",
+      redirectTo: "listEmployee",
       icon: (
-        <IconUserPlus className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconUsersGroup className="text-neutral-900 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
-      label: "List Employees",
-      redirectTo: "listEmployee",
+      label: "Subscription",
+      redirectTo: "subscription",
       icon: (
-        <IconUsersGroup className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <IconCreditCard className="text-neutral-900 h-5 w-5 flex-shrink-0" />
       ),
     },
   ];
@@ -56,7 +61,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
           "h-screen"
         )}
       >
-        <Sidebar open={open} setOpen={setOpen} animate={true}>
+        <Sidebar open={open} setOpen={setOpen} animate={false}>
           <SidebarBody className="justify-between gap-10">
             <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
               {open ? <Logo /> : <LogoIcon />}
@@ -97,14 +102,12 @@ export const Logo = () => {
       href="#"
       className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
     >
-      <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
-      <motion.span
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="font-medium text-black dark:text-white whitespace-pre"
-      >
-        Acet Labs
-      </motion.span>
+      {/* <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" /> */}
+      <Image src={"/menintech3.svg"} width={30} height={30} alt="premium" />
+
+      <span className="font-medium text-black dark:text-white whitespace-pre">
+        MenIntech
+      </span>
     </Link>
   );
 };
@@ -114,7 +117,12 @@ export const LogoIcon = () => {
       href="#"
       className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
     >
-      <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
+      {/* <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" /> */}
+      <Image src={"/menintech3.svg"} width={30} height={30} alt="premium" />
+
+      <span className="font-medium text-black dark:text-white whitespace-pre">
+        MenIntech
+      </span>
     </Link>
   );
 };

@@ -3,8 +3,6 @@ import React, { useState } from "react";
 import * as XLSX from "xlsx";
 import { Pagination } from "@/components/ui/pagination";
 import MonthPicker from "@/components/MonthPicker";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
 import { LoaderCircle } from "lucide-react";
@@ -19,6 +17,7 @@ import {
   where,
 } from "@firebase/firestore";
 import db from "@/lib/firestore";
+import Image from "next/image";
 
 type EmployeeRecord = {
   emp_id: number;
@@ -92,7 +91,6 @@ export default function AddEmployeeComponent() {
   const [expandedRowId, setExpandedRowId] = useState<number | null>(null); // State for expanded row
   const [currentPage, setCurrentPage] = useState(1);
   const [monthYear, setMonthYear] = useState<MonthYear>();
-  const createEmployee = useMutation(api.employee.createEmployee);
   const [loading, setLoading] = useState(false);
   const { user } = useUser();
   const router = useRouter();
@@ -362,20 +360,7 @@ export default function AddEmployeeComponent() {
 
   return (
     <div className="p-4">
-      <MonthPicker onMonthSelect={handleMonthSelect} />
-      {error && <p className="text-red-500">{error}</p>}
-      <div className="mt-5">
-        {monthYear && !error && (
-          <input
-            type="file"
-            accept=".xlsx, .xls"
-            onChange={handleFileChange}
-            className="mb-4"
-          />
-        )}
-      </div>
-
-      {tableData.length !== 0 && (
+      {tableData.length !== 0 ? (
         <>
           <table className="w-full border-collapse border border-gray-300">
             <thead>
@@ -468,6 +453,79 @@ export default function AddEmployeeComponent() {
           <Button disabled={loading} onClick={handleUpdateEmployees}>
             {!loading ? "Save Data" : <LoaderCircle />}
           </Button>
+        </>
+      ) : (
+        <>
+          {monthYear ? (
+            <>
+              <div className="flex h-[70vh]">
+                <div className="m-auto ">
+                  <div className="flex items-center justify-center w-full">
+                    <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600 p-20">
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <svg
+                          className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 20 16"
+                        >
+                          <path
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                          />
+                        </svg>
+                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                          <span className="font-semibold">Click to upload</span>{" "}
+                          for Month : {monthYear.month} and Year:{" "}
+                          {monthYear.year}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          .xlsx, .xls
+                        </p>
+                      </div>
+                      <input
+                        id="dropzone-file"
+                        accept=".xlsx, .xls"
+                        type="file"
+                        onChange={handleFileChange}
+                        className="hidden"
+                      />
+                      <Button onClick={() => setMonthYear(undefined)}>
+                        Cancel
+                      </Button>
+                      {error && <p className="text-red-500">{error}</p>}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex h-[70vh]">
+                <div className="m-auto ">
+                  <Image
+                    aria-hidden
+                    src="/calendar.webp"
+                    alt="Globe icon"
+                    width={300}
+                    height={300}
+                  />
+                  <div className="flex justify-center mb-4">
+                    Select the month to upload the Excel file
+                  </div>
+                  <div className="flex justify-center">
+                    <div className="mt-5">
+                      <MonthPicker onMonthSelect={handleMonthSelect} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </>
       )}
     </div>

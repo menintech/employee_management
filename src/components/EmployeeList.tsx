@@ -36,7 +36,6 @@ interface Employee {
 
 const EmployeeList = () => {
   const router = useRouter();
-  const ISSERVER = typeof window === "undefined";
   const [currentPage, setCurrentPage] = useState(1);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const rowsPerPage = 10;
@@ -44,13 +43,6 @@ const EmployeeList = () => {
   // Function to toggle the visibility of attendance details for an employee
   const handleShowDetails = (emp_id: number) => {
     router.push(`/dashboard/listEmployee/${emp_id}`);
-    const selectedEmp = employees.filter((emp) => emp.emp_id === emp_id);
-    console.log("employee", selectedEmp);
-    if (!ISSERVER)
-      localStorage.setItem(
-        "empDetails",
-        JSON.stringify(selectedEmp[0].attendanceData)
-      );
   };
 
   const paginatedData = employees.slice(
@@ -92,7 +84,7 @@ const EmployeeList = () => {
               <tr>
                 <th className="border px-4 py-2">Employee ID</th>
                 <th className="border px-4 py-2">Name</th>
-                <th className="border px-4 py-2">Email</th>
+                {/* <th className="border px-4 py-2">Email</th> */}
                 <th className="border px-4 py-2">Status</th>
                 <th className="border px-4 py-2">Actions</th>
               </tr>
@@ -106,14 +98,14 @@ const EmployeeList = () => {
                     <td className="border px-4 py-2">
                       {row.firstName} {row.middleName} {row.lastName}
                     </td>
-                    <td className="border px-4 py-2">{row.email}</td>
-                    <td className="border px-4 py-2">
+                    {/* <td className="border px-4 py-2">{row.email}</td> */}
+                    <td className="border px-4 py-2 text-center">
                       {row.isActive ? (
-                        <span className="text-xs bg-green-500 p-2 rounded-xl">
+                        <span className="text-xs bg-green-500 p-2 rounded-xl text-white">
                           Active
                         </span>
                       ) : (
-                        <span className="text-xs bg-red-500 p-2 rounded-xl">
+                        <span className="text-xs bg-red-500 p-2 rounded-xl text-white">
                           In-active
                         </span>
                       )}
@@ -121,7 +113,7 @@ const EmployeeList = () => {
                     <td className="border px-4 py-2">
                       <Button
                         onClick={() => handleShowDetails(row.emp_id)}
-                        className="px-4 py-2 rounded"
+                        className="bg-amber-500 px-4 py-2 rounded mr-4"
                       >
                         Show Details
                       </Button>

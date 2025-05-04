@@ -3,23 +3,11 @@
 import React, { useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import EmployeeList from "@/components/EmployeeList";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import { useUser } from "@clerk/nextjs";
 import AddEmployeeComponent from "@/components/AddEmployeeComponent";
 
 const Employee = () => {
   const { user } = useUser();
-
-  // Early return to handle loading state
-  if (!user?.primaryEmailAddress?.emailAddress) {
-    return <p>Loading...</p>;
-  }
-
-  // Use hooks unconditionally
-  const getEmployees = useQuery(api?.employee?.getEmployee, {
-    employer: user.primaryEmailAddress.emailAddress,
-  });
 
   return (
     <div>
@@ -31,9 +19,7 @@ const Employee = () => {
         <TabsContent value="add">
           <AddEmployeeComponent />
         </TabsContent>
-        <TabsContent value="list">
-          {getEmployees && <EmployeeList employees={getEmployees} />}
-        </TabsContent>
+        <TabsContent value="list">{user && <EmployeeList />}</TabsContent>
       </Tabs>
     </div>
   );
