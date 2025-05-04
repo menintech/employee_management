@@ -42,7 +42,7 @@ const MonthPicker = ({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline">
+        <Button variant="default">
           {selectedMonth !== null
             ? `${months[selectedMonth]} ${selectedYear}`
             : "Select Month"}

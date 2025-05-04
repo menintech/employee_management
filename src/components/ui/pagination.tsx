@@ -20,14 +20,14 @@ export function Pagination({
       <Button
         onClick={() => onPageChange(1)}
         disabled={currentPage === 1}
-        className="px-3 py-1 disabled:opacity-50"
+        className="bg-amber-500 px-3 py-1 disabled:opacity-50"
       >
         First
       </Button>
       <Button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="px-3 py-1 disabled:opacity-50"
+        className="bg-amber-500 px-3 py-1 disabled:opacity-50"
       >
         Previous
       </Button>
@@ -35,14 +35,14 @@ export function Pagination({
       <Button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="px-3 py-1 disabled:opacity-50"
+        className="bg-amber-500 px-3 py-1 disabled:opacity-50"
       >
         Next
       </Button>
       <Button
         onClick={() => onPageChange(totalPages)}
         disabled={currentPage === totalPages}
-        className="px-3 py-1 disabled:opacity-50"
+        className="bg-amber-500 px-3 py-1 disabled:opacity-50"
       >
         Last
       </Button>
